@@ -1,30 +1,12 @@
-"use strict";
+'use strict';
 
-const mongoose = require("mongoose");
-/*
-    id                      bigint primary key,
-    created_by              bigint not null references users(id),
-    created_for_name        varchar(255),
-    created_for_email       varchar(255) not null,
-    created_for_phone       varchar(255),
-    created_for_department  varchar(255),
-    subject                 varchar(255) not null,
-    details                 varchar(8000),
-    location                varchar(255),
-    unit_id                 bigint not null references units(id),
-    priority                varchar(255) default 'MEDIUM',
-    status                  varchar(255) default 'OPEN',
-    date_created            datetime default now(),
-    date_assigned           datetime,
-    date_updated            datetime,
-    date_closed             datetime,
-    updates
-*/
+const mongoose = require('mongoose');
 
 let ticketSchema = new mongoose.Schema({
   createdBy: {
     type: Schema.Types.ObjectId,
-    ref: "User"
+    ref: 'User',
+    required: true
   },
   createdForName: String,
   createdForEmail: {
@@ -41,7 +23,8 @@ let ticketSchema = new mongoose.Schema({
   location: String,
   unit: {
     type: Schema.Types.ObjectId,
-    ref: "Unit"
+    ref: 'Unit',
+    required: true
   },
   dateCreated: {
     type: Date,
@@ -52,18 +35,18 @@ let ticketSchema = new mongoose.Schema({
   dateClosed: Date,
   priority: {
     type: String,
-    enum: ["LOW", "MEDIUM", "HIGH"],
-    default: "MEDIUM"
+    enum: ['LOW', 'MEDIUM', 'HIGH'],
+    default: 'MEDIUM'
   },
   status: {
     type: String,
-    enum: ["OPEN", "ASSIGNED", "ONHOLD", "COMPLETED", "CLOSED"],
-    default: "OPEN"
+    enum: ['OPEN', 'ASSIGNED', 'ONHOLD', 'COMPLETED', 'CLOSED'],
+    default: 'OPEN'
   },
   technicians: [
     {
       type: Schema.Types.ObjectId,
-      ref: "User"
+      ref: 'User'
     }
   ],
   updates: [
@@ -81,4 +64,4 @@ let ticketSchema = new mongoose.Schema({
   ]
 });
 
-module.exports = mongoose.model("Ticket", ticketSchema);
+module.exports = mongoose.model('Ticket', ticketSchema);

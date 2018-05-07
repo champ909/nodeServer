@@ -1,24 +1,8 @@
 "use strict";
 
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-/*
-create table users (
-    id          bigint primary key,
-    type        varchar(255) default 'REGULAR',
-    username    varchar(255) not null unique,
-    hash        varchar(255) not null,
-    enabled     boolean not null default true,
-    first_name  varchar(255),
-    last_name   varchar(255),
-    email       varchar(255) not null unique,
-    phone       varchar(255),
-    department  varchar(255),
-    unit_id     bigint references units(id)
-);
-*/
+const mongoose = require('mongoose');
 
-let userSchema = new Schema({
+let userSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
   email: {
@@ -30,8 +14,8 @@ let userSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ["REGULAR", "ADMIN", "SUPERVISOR", "TECHNICIAN"],
-    default: "REGULAR"
+    enum: ['REGULAR', 'ADMIN', 'SUPERVISOR', 'TECHNICIAN'],
+    default: 'REGULAR'
   },
   username: {
     type: String,
@@ -40,18 +24,20 @@ let userSchema = new Schema({
     lowercase: true,
     trim: true
   },
-  hash: String,
+  hash: {
+    type: String,
+    required: true,
+  },
   enabled: {
     type: Boolean,
-    // required: true,
     default: true
   },
   phone: String,
   department: String,
   unit: {
     type: Schema.Types.ObjectId,
-    ref: "Unit"
+    ref: 'Unit'
   }
 });
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);

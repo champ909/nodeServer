@@ -1,16 +1,6 @@
-"use strict";
+'use strict';
 
-const mongoose = require("mongoose");
-/*
-create table units (
-    id          bigint primary key,
-    name        varchar(255) not null unique,
-    description varchar(8000),
-    email       varchar(255),
-    phone       varchar(255),
-    location    varchar(255)
-);
-*/
+const mongoose = require('mongoose');
 
 let unitSchema = new mongoose.Schema({
   name: {
@@ -25,15 +15,15 @@ let unitSchema = new mongoose.Schema({
   supervisors: [
     {
       type: Schema.Types.ObjectId,
-      ref: "User"
+      ref: 'User'
     }
   ],
   technicians: [
     {
       type: Schema.Types.ObjectId,
-      ref: "User"
+      ref: 'User'
     }
   ]
 });
 
-module.exports = mongoose.model("Unit", unitSchema);
+module.exports = mongoose.model('Unit', unitSchema);
