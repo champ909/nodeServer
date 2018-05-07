@@ -18,7 +18,7 @@ create table users (
 );
 */
 
-let userSchema = new mongoose.Schema({
+let userSchema = new Schema({
   firstName: String,
   lastName: String,
   email: {
@@ -43,7 +43,7 @@ let userSchema = new mongoose.Schema({
   hash: String,
   enabled: {
     type: Boolean,
-    required: true,
+    // required: true,
     default: true
   },
   phone: String,

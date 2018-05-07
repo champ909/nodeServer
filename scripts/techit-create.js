@@ -1,16 +1,17 @@
+import { connect } from "net";
+
 /**
  * This is a Mongo Shell script. Run it with Mongo shell on command line:
  *     mongo blogs.js
  * or inside Mongo shell: load('blogs.js')
  */
-db = connect("localhost/techit");
+db = connect(process.env.DBURL);
 
 db.users.drop();
 db.tickets.drop();
 db.units.drop();
 
 // create a unique index on the email field in user
-
 db.users.createIndex(
   {
     username: 1,
@@ -22,17 +23,18 @@ db.users.createIndex(
 );
 
 // insert two users and get the generated _id
-
 userId1 = db.users.insertOne({
   firstName: "John",
   lastName: "Doe",
-  email: "jdoe1@localhost"
+  email: "jdoe1@localhost",
+  username: "jdoe1"
 }).insertedId;
 
 userId2 = db.users.insertOne({
   firstName: "Jane",
   lastName: "Doe",
-  email: "jdoe2@localhost"
+  email: "jdoe2@localhost",
+  username: "jdoe2"
 }).insertedId;
 
 print(userId1);
