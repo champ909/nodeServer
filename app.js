@@ -9,11 +9,11 @@ var mongoose = require("mongoose");
 
 var app = express();
 
-mongoose.connection.on( 'connected', () =>
-  console.log( `Mongoose connected to ${process.env.DBURL}` )
+mongoose.connection.on("connected", () =>
+  console.log(`Mongoose connected to ${process.env.DBURL}`)
 );
-mongoose.connection.on( 'disconnected', () =>
-  console.log( `Mongoose disconnected from ${process.env.DBURL}.`)
+mongoose.connection.on("disconnected", () =>
+  console.log(`Mongoose disconnected from ${process.env.DBURL}.`)
 );
 mongoose.connect(process.env.DBURL);
 
@@ -34,7 +34,8 @@ app.use("/users", usersController);
 app.use("/api/login", loginService);
 
 app.use(passport.initialize());
-app.use("/api/",
+app.use(
+  "/api/",
   passport.authenticate("jwt", {
     session: false,
     failWithError: true
@@ -52,11 +53,11 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
+  if (req.app.get("env") === "development") res.locals.error = err;
 
   // render the error page
   res.status(err.status || 500);
-  res.render("error");
+  res.json(res.locals);
 });
 
 async function shutdown(callback) {
