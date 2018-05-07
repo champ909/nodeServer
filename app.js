@@ -18,9 +18,10 @@ mongoose.connection.on("disconnected", () =>
 mongoose.connect(process.env.DBURL);
 
 var indexController = require("./routes/index");
-var usersController = require("./routes/users");
 var loginService = require("./services/login");
 var usersService = require("./services/users");
+var unitsService = require("./services/units");
+var ticketsService = require("./services/tickets");
 var passport = require("./passport");
 
 app.use(logger("dev"));
@@ -30,7 +31,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexController);
-app.use("/users", usersController);
 app.use("/api/login", loginService);
 
 app.use(passport.initialize());
@@ -43,6 +43,8 @@ app.use(
 );
 
 app.use("/api/users", usersService);
+app.use("/api/units", unitsService);
+app.use("/api/tickets", ticketsService);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

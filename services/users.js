@@ -1,8 +1,11 @@
 var express = require('express');
 var router = express.Router();
-var User = require('../models/user');
 var createError = require("http-errors");
 var bcrypt = require('bcrypt');
+
+var Unit = require('../models/unit');
+var User = require('../models/user');
+var Ticket = require('../models/ticket');
 
 // Get all users.
 router.get( '/', ( req, res, next ) => {
@@ -60,6 +63,18 @@ router.post( '/', ( req, res, next ) => {
     }
   } else {
     next( createError(403, 'Unauthorized: Insufficient Privilege.') );
+  }
+});
+
+// Get the tickets submitted by a user.
+router.get( '/:userId/tickets', ( req, res, next ) => {
+  if ( req.user.type == 'ADMIN' || req.user.userId == req.params.userId ) {
+    Ticket.find( { createdBy: req.params.userId }, ( err, tickets ) => {
+      if ( err ) return next(err);
+      res.json( tickets ); 
+    });
+  } else {
+    next( createError(401, 'Unauthorized: Insufficient Privilege.') );
   }
 });
 

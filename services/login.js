@@ -19,6 +19,7 @@ router.post( '/', ( req, res, next ) => {
         if ( bcrypt.compareSync( req.body.password, user.hash ) ) {
           res.json({
             token: jwt.sign( {
+                userId: user._id,
                 username: user.username,
                 type: user.type
               }, jwtSecret )

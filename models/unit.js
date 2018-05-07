@@ -1,8 +1,9 @@
 'use strict';
 
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-let unitSchema = new mongoose.Schema({
+let unitSchema = new Schema({
   name: {
     type: String,
     unique: true,
