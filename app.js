@@ -17,7 +17,6 @@ mongoose.connection.on("disconnected", () =>
 );
 mongoose.connect(process.env.DBURL);
 
-var indexController = require("./routes/index");
 var loginService = require("./services/login");
 var usersService = require("./services/users");
 var unitsService = require("./services/units");
@@ -30,7 +29,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", indexController);
 app.use("/api/login", loginService);
 
 app.use(passport.initialize());
