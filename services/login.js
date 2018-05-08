@@ -25,10 +25,10 @@ router.post( '/', ( req, res, next ) => {
               }, jwtSecret )
           });
         } else {
-          next( createError(400, 'Bad Request: Wrong username and/or password.') );
+          next( createError(401, 'Bad Request: Wrong username and/or password.') );
         }
       } else {
-        next( createError(400, 'Bad Request: User not found.') );
+        next( createError(404, 'Bad Request: User not found.') );
       }
     });
   }

@@ -10,10 +10,12 @@ var Ticket = require('../models/ticket');
 // Get all users.
 router.get( '/', ( req, res, next ) => {
   if ( req.user.type == 'ADMIN' ) {
-    User.find( {}, ( err, users ) => {
-      if ( err ) return next(err);
-      res.json( users ); 
-    });
+    User.find( {}, { hash:0 } )
+      .populate( 'unit')
+      .exec( (err, users ) => {
+        if ( err ) return next(err);
+        res.json( users ); 
+      });
   } else {
     next( createError(401, 'Unauthorized: Insufficient Privilege.') );
   }
@@ -22,7 +24,9 @@ router.get( '/', ( req, res, next ) => {
 // Get a user by username.
 router.get( '/:username', ( req, res, next ) => {
   if ( req.user.type == 'ADMIN' || req.params.username === req.user.username ) {
-    User.findOne( { username: req.params.username }, ( err, user ) => {
+    User.findOne( { username: req.params.username }, { hash:0 } )
+    .populate('unit')
+    .exec( ( err, user ) => {
       if ( err ) return next( err );
       res.json(user);
     });
@@ -35,7 +39,7 @@ router.get( '/:username', ( req, res, next ) => {
 router.post( '/', ( req, res, next ) => {
   if ( req.user.type == 'ADMIN' ) {
     if ( req.body.username == null || req.body.password == null ) {
-      next( createError(400, 'Bad Request: Missing username and/or password.') );
+      next( createError(404, 'Bad Request: Missing username and/or password.') );
     } else {
       const passhash = bcrypt.hashSync( req.body.password, 10 );
       const user = new User({
@@ -69,7 +73,10 @@ router.post( '/', ( req, res, next ) => {
 // Get the tickets submitted by a user.
 router.get( '/:userId/tickets', ( req, res, next ) => {
   if ( req.user.type == 'ADMIN' || req.user.userId == req.params.userId ) {
-    Ticket.find( { createdBy: req.params.userId }, ( err, tickets ) => {
+    Ticket.find( { createdBy: req.params.userId } )
+      .populate( 'technicians', { hash:0 } )
+      .populate( 'unit', 'name' )
+      .exec( ( err, tickets ) => {
       if ( err ) return next(err);
       res.json( tickets ); 
     });

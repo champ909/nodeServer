@@ -9,7 +9,10 @@ var Ticket = require('../models/ticket');
 // Get all units.
 router.get( '/', ( req, res, next ) => {
     if ( req.user.type == 'ADMIN' ) {
-        Unit.find( {}, ( err, units ) => {
+        Unit.find( {} )
+            .populate( 'supervisors', { hash:0 } )
+            .populate( 'technicians', { hash:0 } )
+            .exec( ( err, units ) => {
           if ( err ) return next(err);
           res.json( units ); 
         });
@@ -21,20 +24,11 @@ router.get( '/', ( req, res, next ) => {
 // Get the technicians of a unit.
 router.get( '/:unitId/technicians', ( req, res, next ) => {
     if ( req.user.type == 'ADMIN' ) {
-        Unit.find( { _id: req.params.unitId }, ( err, unit ) => {
+        Unit.find( { _id: req.params.unitId } )
+            .populate( 'technicians', { hash:0 } )
+            .exec( ( err, unit ) => {
             if ( err ) return next(err);
           
-            // let unitTechnicians = [];
-
-            // unit[0].technicians.forEach( technicianId => {
-            //     User.findOne( { _id: technicianId }, ( err, technician ) => {
-            //         if ( err ) return next( err );
-
-            //         unitTechnicians.push( technician );
-            //       });
-            // });
-            
-            // To do : map technician ids to user object.
             res.json( unit[0].technicians ); 
         });
       } else {
@@ -45,7 +39,10 @@ router.get( '/:unitId/technicians', ( req, res, next ) => {
 // Get the tickets submitted to a unit.
 router.get( '/:unitId/tickets', ( req, res, next ) => {
     if ( req.user.type == 'ADMIN' ) {
-        Ticket.find( { unit: req.params.unitId }, ( err, tickets ) => {
+        Ticket.find( { unit: req.params.unitId } )
+            .populate( 'technicians' )
+            .populate( 'unit', 'name' )
+            .exec( ( err, tickets ) => {
             if ( err ) return next(err);
           
             res.json( tickets ); 
