@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 let unitSchema = new Schema({
@@ -16,15 +16,33 @@ let unitSchema = new Schema({
   supervisors: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'User'
+      ref: "User"
     }
   ],
   technicians: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'User'
+      ref: "User"
     }
   ]
 });
 
-module.exports = mongoose.model('Unit', unitSchema);
+unitSchema.statics.getUnitById = function(id, callback) {
+  return this.findOne({ _id: id })
+    .populate("supervisors")
+    .populate("technicians")
+    .exec(callback);
+};
+
+unitSchema.statics.getUnits = function(callback) {
+  return this.find({})
+    .populate("supervisors")
+    .populate("technicians")
+    .exec(callback);
+};
+
+unitSchema.statics.saveUnit = function(unit, callback) {
+  return this.save(unit, callback);
+};
+
+module.exports = mongoose.model("Unit", unitSchema);
