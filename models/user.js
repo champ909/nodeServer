@@ -1,6 +1,6 @@
 "use strict";
 
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 let userSchema = new Schema({
@@ -15,8 +15,8 @@ let userSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ['REGULAR', 'ADMIN', 'SUPERVISOR', 'TECHNICIAN'],
-    default: 'REGULAR'
+    enum: ["REGULAR", "ADMIN", "SUPERVISOR", "TECHNICIAN"],
+    default: "REGULAR"
   },
   username: {
     type: String,
@@ -27,7 +27,7 @@ let userSchema = new Schema({
   },
   hash: {
     type: String,
-    required: true,
+    required: true
   },
   enabled: {
     type: Boolean,
@@ -37,9 +37,30 @@ let userSchema = new Schema({
   department: String,
   unit: {
     type: Schema.Types.ObjectId,
-    ref: 'Unit'
+    ref: "Unit"
   }
 });
 
+userSchema.statics.getUserById = function(id, callback) {
+  return this.findOne({ _id: id }, { hash: 0 })
+    .populate("unit")
+    .exec(callback);
+};
 
-module.exports = mongoose.model('User', userSchema);
+userSchema.statics.getUserByUsername = function(username, callback) {
+  return this.findOne({ username: username }, { hash: 0 })
+    .populate("unit")
+    .exec(callback);
+};
+
+userSchema.statics.getUsers = function(callback) {
+  return this.find({}, { hash: 0 })
+    .populate("unit")
+    .exec(callback);
+};
+
+userSchema.statics.saveUser = function(user, callback) {
+  return this.save(user, callback);
+};
+
+module.exports = mongoose.model("User", userSchema);

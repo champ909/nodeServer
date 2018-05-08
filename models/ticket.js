@@ -1,12 +1,12 @@
-'use strict';
+"use strict";
 
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 let ticketSchema = new Schema({
   createdBy: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true
   },
   createdForName: String,
@@ -24,7 +24,7 @@ let ticketSchema = new Schema({
   location: String,
   unit: {
     type: Schema.Types.ObjectId,
-    ref: 'Unit',
+    ref: "Unit",
     required: true
   },
   dateCreated: {
@@ -36,18 +36,18 @@ let ticketSchema = new Schema({
   dateClosed: Date,
   priority: {
     type: String,
-    enum: ['LOW', 'MEDIUM', 'HIGH'],
-    default: 'MEDIUM'
+    enum: ["LOW", "MEDIUM", "HIGH"],
+    default: "MEDIUM"
   },
   status: {
     type: String,
-    enum: ['OPEN', 'ASSIGNED', 'ONHOLD', 'COMPLETED', 'CLOSED'],
-    default: 'OPEN'
+    enum: ["OPEN", "ASSIGNED", "ONHOLD", "COMPLETED", "CLOSED"],
+    default: "OPEN"
   },
   technicians: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'User'
+      ref: "User"
     }
   ],
   updates: [
@@ -59,10 +59,75 @@ let ticketSchema = new Schema({
       },
       date: {
         type: Date,
-        default: new Date()
+        default: Date.now
       }
     }
   ]
 });
 
-module.exports = mongoose.model('Ticket', ticketSchema);
+ticketSchema.statics.getTicketById = function(id, callback) {
+  return this.findOne({ _id: id })
+    .populate("technicians")
+    .populate("unit")
+    .exec(callback);
+};
+
+ticketSchema.statics.getTickets = function(callback) {
+  return this.find({})
+    .populate("technicians")
+    .populate("unit")
+    .exec(callback);
+};
+
+// created by user under certain unit [combined dao]
+ticketSchema.statics.getTicketsCreatedByUser = function(
+  userId,
+  unitId,
+  callback
+) {
+  let query = { createdBy: userId };
+  if (unitId) query.unit = unitId;
+
+  return this.find(query)
+    .populate("technicians")
+    .populate("unit")
+    .exec(callback);
+};
+
+ticketSchema.statics.getTicketsCreatedForEmail = function(email, callback) {
+  return this.find({ createdForEmail: email })
+    .populate("technicians")
+    .populate("unit")
+    .exec(callback);
+};
+
+ticketSchema.statics.getTicketsAssignedToTechnician = function(
+  technicianId,
+  callback
+) {
+  return this.find({
+    technicians: {
+      $all: [technicianId]
+    }
+  })
+    .populate("technicians")
+    .populate("unit")
+    .exec(callback);
+};
+
+ticketSchema.statics.getTicketsAssignedToUnit = function(unitId, callback) {
+  return this.find({ unit: unitId })
+    .populate("technicians")
+    .populate("unit")
+    .exec(callback);
+};
+
+ticketSchema.statics.saveTicket = function(ticket, callback) {
+  return this.save(ticket, callback);
+};
+
+ticketSchema.method.saveUpdate = function(details, technician, callback) {
+  return this.updates.push({ message: details, technician: technician });
+};
+
+module.exports = mongoose.model("Ticket", ticketSchema);
