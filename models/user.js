@@ -60,7 +60,7 @@ userSchema.statics.getUsers = function(callback) {
 };
 
 userSchema.statics.saveUser = function(user, callback) {
-  return this.save(user, callback);
+  return user.save(callback);
 };
 
 module.exports = mongoose.model("User", userSchema);

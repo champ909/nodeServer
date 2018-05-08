@@ -23,7 +23,7 @@ router.get("/:unitId/technicians", (req, res, next) => {
   if (req.user.type == "ADMIN") {
     Unit.getUnitById(req.params.unitId, (err, unit) => {
       if (err) return next(err);
-      res.json(unit[0].technicians);
+      res.json(unit && unit[0].technicians ? unit[0].technicians : []);
     });
   } else {
     next(createError(403, "Forbidden: Insufficient Privilege."));

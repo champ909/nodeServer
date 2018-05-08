@@ -123,11 +123,11 @@ ticketSchema.statics.getTicketsAssignedToUnit = function(unitId, callback) {
 };
 
 ticketSchema.statics.saveTicket = function(ticket, callback) {
-  return this.save(ticket, callback);
+  return ticket.save(callback);
 };
 
-ticketSchema.method.saveUpdate = function(details, technician, callback) {
-  return this.updates.push({ message: details, technician: technician });
+ticketSchema.statics.saveUpdate = function(ticket, details, technician) {
+  return ticket.updates.push({ message: details, technician: technician });
 };
 
 module.exports = mongoose.model("Ticket", ticketSchema);

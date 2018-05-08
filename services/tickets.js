@@ -64,7 +64,7 @@ router.get("/:ticketId/technicians", (req, res, next) => {
   if (req.user.type == "ADMIN") {
     Ticket.getTicketById(req.params.ticketId, (err, ticket) => {
       if (err) return next(err);
-      res.json(ticket[0].technicians);
+      res.json(ticket && ticket[0].technicians ? ticket[0].technicians : []);
     });
   } else {
     next(createError(403, "Forbidden: Insufficient Privilege."));
@@ -78,8 +78,9 @@ router.put("/:ticketId/status/:status", (req, res, next) => {
   if (req.user.type == "ADMIN") {
     Ticket.getTicketById(req.params.ticketId, (err, ticket) => {
       if (err) return next(err);
-
-      ticket.saveUpdate(
+      if (!ticket) return next(createError(404));
+      Ticket.saveUpdate(
+        ticket,
         `Changed the status from ${ticket.status} to ${req.params.status}.`,
         req.user
       );
@@ -103,8 +104,10 @@ router.put("/:ticketId/priority/:priority", (req, res, next) => {
   if (req.user.type == "ADMIN") {
     Ticket.getTicketById(req.params.ticketId, (err, ticket) => {
       if (err) return next(err);
+      if (!ticket) return next(createError(404));
 
-      ticket.saveUpdate(
+      Ticket.saveUpdate(
+        ticket,
         `Changed the priority from ${ticket.priority} to ${
           req.params.priority
         }.`,
