@@ -42,7 +42,7 @@ unitSchema.statics.getUnits = function(callback) {
 };
 
 unitSchema.statics.saveUnit = function(unit, callback) {
-  return this.save(unit, callback);
+  return unit.save(callback);
 };
 
 module.exports = mongoose.model("Unit", unitSchema);
