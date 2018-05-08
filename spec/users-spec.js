@@ -7,31 +7,43 @@ const api = request.defaults({
 
 describe('Users API Tests:', function () {
 
-  let jwtToken = '';
+  let ticketUserJwt = '';
 
-  beforeAll(function (done) {
+  beforeAll( function (done) {
     api.post({
       url: '/login',
       body: {
-        username: 'John'
+        username: 'jojo',
+        password: 'abcd'
       }
     }, function (err, res, body) {
       expect(res.statusCode).toBe(200);
-      jwtToken = body.token;
+      ticketUserJwt = body.token;
       done();
     });
   });
 
-  it('Get A User', function (done) {
+  it('Get the tickets submitted by a user.', function (done) {
     api.get({
-      url: '/users/John',
+      url: '/users/5af06af45c4052786643f5da/tickets',
       headers: {
-        'Authorization': 'Bearer ' + jwtToken
+        'Authorization': 'Bearer ' + ticketUserJwt
       }
     }, function (err, res, body) {
       expect(res.statusCode).toBe(200);
-      expect(body.firstName).toBe('John');
-      expect(body.lastName).toBe('Doe');
+      expect(body.length).toBeGreaterThan(0);
+      done();
+    });
+  });
+
+  it('Get the tickets submitted by other user.', function (done) {
+    api.get({
+      url: '/users/5af06af45c4052786643f5d9a/tickets',
+      headers: {
+        'Authorization': 'Bearer ' + ticketUserJwt
+      }
+    }, function (err, res, body) {
+      expect(res.statusCode).toBe(401);
       done();
     });
   });
