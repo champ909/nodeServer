@@ -16,7 +16,7 @@ router.post("/", (req, res, next) => {
       if (err) return next(err);
 
       if (user) {
-        if (bcrypt.compareSync(req.body.password, user.hash)) {
+        if (bcrypt.compare(req.body.password, user.hash)) {
           res.json({
             token: jwt.sign(
               {
