@@ -29,11 +29,11 @@ router.post("/", (req, res, next) => {
           });
         } else {
           next(
-            createError(401, "Bad Request: Wrong username and/or password.")
+            createError(401, "Unauthorized: Wrong username and/or password.")
           );
         }
       } else {
-        next(createError(404, "Bad Request: User not found."));
+        next(createError(404, "User not found."));
       }
     });
   }

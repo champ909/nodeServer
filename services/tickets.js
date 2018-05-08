@@ -14,7 +14,7 @@ router.get("/", (req, res, next) => {
       res.json(tickets);
     });
   } else {
-    next(createError(401, "Unauthorized: Insufficient Privilege."));
+    next(createError(403, "Forbidden: Insufficient Privilege."));
   }
 });
 
@@ -49,13 +49,13 @@ router.post("/", (req, res, next) => {
 
       Tickets.saveTicket(ticket, (err, ticket) => {
         if (err) {
-          return next(createError(400, "Failed to create ticket."));
+          return next(createError(500, "Failed to create ticket."));
         }
         res.send(ticket);
       });
     }
   } else {
-    next(createError(401, "Unauthorized: Insufficient Privilege."));
+    next(createError(403, "Forbidden: Insufficient Privilege."));
   }
 });
 
@@ -67,7 +67,7 @@ router.get("/:ticketId/technicians", (req, res, next) => {
       res.json(ticket[0].technicians);
     });
   } else {
-    next(createError(401, "Unauthorized: Insufficient Privilege."));
+    next(createError(403, "Forbidden: Insufficient Privilege."));
   }
 });
 
@@ -88,13 +88,13 @@ router.put("/:ticketId/status/:status", (req, res, next) => {
       if (req.params.status == "CLOSED") ticket.dateClosed = Date.now;
       Ticket.saveTicket(ticket, (err, ticket) => {
         if (err) {
-          return next(createError(400, "Failed to create ticket."));
+          return next(createError(500, "Failed to create ticket."));
         }
         res.send(ticket);
       });
     });
   } else {
-    next(createError(401, "Unauthorized: Insufficient Privilege."));
+    next(createError(403, "Forbidden: Insufficient Privilege."));
   }
 });
 
@@ -114,13 +114,13 @@ router.put("/:ticketId/priority/:priority", (req, res, next) => {
       ticket.dateUpdated = Date.now;
       Ticket.saveTicket(ticket, (err, ticket) => {
         if (err) {
-          return next(createError(400, "Failed to create ticket."));
+          return next(createError(500, "Failed to create ticket."));
         }
         res.send(ticket);
       });
     });
   } else {
-    next(createError(401, "Unauthorized: Insufficient Privilege."));
+    next(createError(403, "Forbidden: Insufficient Privilege."));
   }
 });
 

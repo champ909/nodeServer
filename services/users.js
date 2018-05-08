@@ -27,7 +27,7 @@ router.get("/:username", (req, res, next) => {
       res.json(user);
     });
   } else {
-    next(createError(403, "Unauthorized: Insufficient Privilege."));
+    next(createError(403, "Forbidden: Insufficient Privilege."));
   }
 });
 
@@ -35,7 +35,7 @@ router.get("/:username", (req, res, next) => {
 router.post("/", (req, res, next) => {
   if (req.user.type == "ADMIN") {
     if (req.body.username == null || req.body.password == null) {
-      next(createError(404, "Bad Request: Missing username and/or password."));
+      next(createError(404, "Missing username and/or password."));
     } else {
       const passhash = bcrypt.hashSync(req.body.password, 10);
       const user = new User({
@@ -53,16 +53,16 @@ router.post("/", (req, res, next) => {
       User.saveUser(user, (err, user) => {
         if (err) {
           if (err.message.includes("duplicate")) {
-            return next(createError(400, "User already exists."));
+            return next(createError(400, "Bad Request : User already exists."));
           } else {
-            return next(createError(400, "Failed to save user."));
+            return next(createError(500, "Failed to save user."));
           }
         }
         res.send(user);
       });
     }
   } else {
-    next(createError(403, "Unauthorized: Insufficient Privilege."));
+    next(createError(403, "Forbidden: Insufficient Privilege."));
   }
 });
 
@@ -74,7 +74,7 @@ router.get("/:userId/tickets", (req, res, next) => {
       res.json(tickets);
     });
   } else {
-    next(createError(401, "Unauthorized: Insufficient Privilege."));
+    next(createError(403, "Forbidden: Insufficient Privilege."));
   }
 });
 

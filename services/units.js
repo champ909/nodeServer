@@ -14,7 +14,7 @@ router.get("/", (req, res, next) => {
       res.json(units);
     });
   } else {
-    next(createError(401, "Unauthorized: Insufficient Privilege."));
+    next(createError(403, "Forbidden: Insufficient Privilege."));
   }
 });
 
@@ -26,7 +26,7 @@ router.get("/:unitId/technicians", (req, res, next) => {
       res.json(unit[0].technicians);
     });
   } else {
-    next(createError(401, "Unauthorized: Insufficient Privilege."));
+    next(createError(403, "Forbidden: Insufficient Privilege."));
   }
 });
 
@@ -38,7 +38,7 @@ router.get("/:unitId/tickets", (req, res, next) => {
       res.json(tickets);
     });
   } else {
-    next(createError(401, "Unauthorized: Insufficient Privilege."));
+    next(createError(403, "Forbidden: Insufficient Privilege."));
   }
 });
 
