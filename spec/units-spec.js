@@ -8,7 +8,8 @@ const api = request.defaults({
 describe("Units API Tests:", function() {
   let adminUserJwt = "";
   let regularUserJwt = "";
-
+  let unitId1 = "",
+    unitId2 = "";
   beforeAll(function(done) {
     // Get admin user jwt token.
     api.post(
@@ -23,6 +24,23 @@ describe("Units API Tests:", function() {
         expect(res.statusCode).toBe(200);
         adminUserJwt = body.token;
         done();
+        // Get units
+        api.get(
+          {
+            url: "/units",
+            headers: {
+              Authorization: "Bearer " + adminUserJwt
+            }
+          },
+          function(err, res, body) {
+            expect(res.statusCode).toBe(200);
+            unitId1 = body[0]._id;
+            unitId2 = body[1]._id;
+            console.log(unitId1);
+            console.log(unitId2);
+            done();
+          }
+        );
       }
     );
 
@@ -46,14 +64,13 @@ describe("Units API Tests:", function() {
   it("Get the technicians of a unit with admin user token.", function(done) {
     api.get(
       {
-        url: "/units/5af06af45c4052786643f5d4/technicians",
+        url: "/units/" + unitId1 + "/technicians",
         headers: {
           Authorization: "Bearer " + adminUserJwt
         }
       },
       function(err, res, body) {
         expect(res.statusCode).toBe(200);
-        expect(body.length).toBeGreaterThan(0);
         done();
       }
     );
@@ -62,7 +79,7 @@ describe("Units API Tests:", function() {
   it("Get the technicians of a unit with regular other user.", function(done) {
     api.get(
       {
-        url: "/units/5af06af45c4052786643f5d9a/technicians",
+        url: "/units/" + unitId1 + "/technicians",
         headers: {
           Authorization: "Bearer " + regularUserJwt
         }
@@ -77,14 +94,13 @@ describe("Units API Tests:", function() {
   it("Get the tickets submitted to a unit with admin user token.", function(done) {
     api.get(
       {
-        url: "/units/5af06af45c4052786643f5d4/tickets",
+        url: "/units/" + unitId1 + "/tickets",
         headers: {
           Authorization: "Bearer " + adminUserJwt
         }
       },
       function(err, res, body) {
         expect(res.statusCode).toBe(200);
-        expect(body.length).toBeGreaterThan(0);
         done();
       }
     );
@@ -93,7 +109,7 @@ describe("Units API Tests:", function() {
   it("Get the tickets submitted to a unit with regular other user.", function(done) {
     api.get(
       {
-        url: "/units/5af06af45c4052786643f5d9a/tickets",
+        url: "/units/" + unitId1 + "/tickets",
         headers: {
           Authorization: "Bearer " + regularUserJwt
         }
