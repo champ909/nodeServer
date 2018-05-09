@@ -41,20 +41,33 @@ let userSchema = new Schema({
   }
 });
 
-userSchema.statics.getUserById = function(id, callback) {
-  return this.findOne({ _id: id }, { hash: 0 })
+userSchema.statics.getUserById = function(id, fieldFilter, callback) {
+  return this.findOne(
+    { _id: id },
+    fieldFilter || fieldFilter != {} ? fieldFilter : { hash: 0 }
+  )
     .populate("unit")
     .exec(callback);
 };
 
-userSchema.statics.getUserByUsername = function(username, callback) {
-  return this.findOne({ username: username }, { hash: 0 })
+userSchema.statics.getUserByUsername = function(
+  username,
+  fieldFilter,
+  callback
+) {
+  return this.findOne(
+    { username: username },
+    fieldFilter || fieldFilter != {} ? fieldFilter : { hash: 0 }
+  )
     .populate("unit")
     .exec(callback);
 };
 
-userSchema.statics.getUsers = function(callback) {
-  return this.find({}, { hash: 0 })
+userSchema.statics.getUsers = function(fieldFilter, callback) {
+  return this.find(
+    {},
+    fieldFilter || fieldFilter != {} ? fieldFilter : { hash: 0 }
+  )
     .populate("unit")
     .exec(callback);
 };

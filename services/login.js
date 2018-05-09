@@ -12,11 +12,15 @@ router.post("/", (req, res, next) => {
   if (req.body.username == null || req.body.password == null) {
     next(createError(400, "Bad Request: Missing username and/or password."));
   } else {
-    User.getUserByUsername(req.body.username, (err, user) => {
+    User.getUserByUsername(req.body.username, { hash: 1 }, (err, user) => {
       if (err) return next(err);
 
       if (user) {
-        if (bcrypt.compare(req.body.password, user.hash)) {
+        bcrypt.compare(req.body.password, user.hash).then(result => {
+          if (!result)
+            return next(
+              createError(401, "Unauthorized: Wrong username and/or password.")
+            );
           res.json({
             token: jwt.sign(
               {
@@ -27,11 +31,7 @@ router.post("/", (req, res, next) => {
               jwtSecret
             )
           });
-        } else {
-          next(
-            createError(401, "Unauthorized: Wrong username and/or password.")
-          );
-        }
+        });
       } else {
         next(createError(404, "User not found."));
       }
