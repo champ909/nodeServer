@@ -6,7 +6,9 @@ const api = request.defaults({
 });
 
 describe("Users API Tests:", function() {
-  let ticketUserJwt = "";
+  let ticketUserJwt = "",
+    ticketUserId = "",
+    otherUserId = "";
 
   beforeAll(function(done) {
     api.post(
@@ -20,7 +22,44 @@ describe("Users API Tests:", function() {
       function(err, res, body) {
         expect(res.statusCode).toBe(200);
         ticketUserJwt = body.token;
-        done();
+        api.get(
+          {
+            url: "/users/jojo",
+            headers: {
+              Authorization: "Bearer " + ticketUserJwt
+            }
+          },
+          function(err, res, body) {
+            expect(res.statusCode).toBe(200);
+            ticketUserId = body._id;
+            done();
+          }
+        );
+      }
+    );
+    api.post(
+      {
+        url: "/login",
+        body: {
+          username: "blee",
+          password: "abcd"
+        }
+      },
+      function(err, res, body) {
+        expect(res.statusCode).toBe(200);
+        api.get(
+          {
+            url: "/users/blee",
+            headers: {
+              Authorization: "Bearer " + body.token
+            }
+          },
+          function(err, res, body) {
+            expect(res.statusCode).toBe(200);
+            otherUserId = body._id;
+            done();
+          }
+        );
       }
     );
   });
@@ -28,14 +67,13 @@ describe("Users API Tests:", function() {
   it("Get the tickets submitted by a user.", function(done) {
     api.get(
       {
-        url: "/users/5af06af45c4052786643f5da/tickets",
+        url: "/users/" + ticketUserId + "/tickets",
         headers: {
           Authorization: "Bearer " + ticketUserJwt
         }
       },
       function(err, res, body) {
         expect(res.statusCode).toBe(200);
-        expect(body.length).toBeGreaterThan(0);
         done();
       }
     );
@@ -44,7 +82,7 @@ describe("Users API Tests:", function() {
   it("Get the tickets submitted by other user.", function(done) {
     api.get(
       {
-        url: "/users/5af06af45c4052786643f5d9a/tickets",
+        url: "/users/" + otherUserId + "/tickets",
         headers: {
           Authorization: "Bearer " + ticketUserJwt
         }
