@@ -20,9 +20,6 @@ describe("Units API Tests:", function() {
         }
       },
       function(err, res, body) {
-        console.log("1" + err);
-        console.log("2" + res);
-        console.log("3" + body);
         expect(res.statusCode).toBe(200);
         adminUserJwt = body.token;
         done();

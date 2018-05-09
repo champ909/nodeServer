@@ -12,7 +12,7 @@ router.post("/", (req, res, next) => {
   if (req.body.username == null || req.body.password == null) {
     next(createError(400, "Bad Request: Missing username and/or password."));
   } else {
-    User.getUserByUsername(req.body.username, { hash: 1 }, (err, user) => {
+    User.getUserByUsername(req.body.username, {}, (err, user) => {
       if (err) return next(err);
 
       if (user) {
@@ -24,7 +24,7 @@ router.post("/", (req, res, next) => {
           res.json({
             token: jwt.sign(
               {
-                userId: user._id,
+                userId: user.id,
                 username: user.username,
                 type: user.type
               },

@@ -42,10 +42,7 @@ let userSchema = new Schema({
 });
 
 userSchema.statics.getUserById = function(id, fieldFilter, callback) {
-  return this.findOne(
-    { _id: id },
-    fieldFilter || fieldFilter != {} ? fieldFilter : { hash: 0 }
-  )
+  return this.findOne({ _id: id }, fieldFilter ? fieldFilter : { hash: 0 })
     .populate("unit")
     .exec(callback);
 };
@@ -57,17 +54,14 @@ userSchema.statics.getUserByUsername = function(
 ) {
   return this.findOne(
     { username: username },
-    fieldFilter || fieldFilter != {} ? fieldFilter : { hash: 0 }
+    fieldFilter ? fieldFilter : { hash: 0 }
   )
     .populate("unit")
     .exec(callback);
 };
 
 userSchema.statics.getUsers = function(fieldFilter, callback) {
-  return this.find(
-    {},
-    fieldFilter || fieldFilter != {} ? fieldFilter : { hash: 0 }
-  )
+  return this.find({}, fieldFilter ? fieldFilter : { hash: 0 })
     .populate("unit")
     .exec(callback);
 };

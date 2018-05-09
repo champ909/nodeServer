@@ -10,7 +10,7 @@ var Ticket = require("../models/ticket");
 // Get all users.
 router.get("/", (req, res, next) => {
   if (req.user.type == "ADMIN") {
-    User.getUsers((err, users) => {
+    User.getUsers({ hash: 0 }, (err, users) => {
       if (err) return next(err);
       res.json(users);
     });
@@ -22,7 +22,7 @@ router.get("/", (req, res, next) => {
 // Get a user by username.
 router.get("/:username", (req, res, next) => {
   if (req.user.type == "ADMIN" || req.params.username === req.user.username) {
-    User.getUserByUsername(req.params.username, (err, user) => {
+    User.getUserByUsername(req.params.username, { hash: 0 }, (err, user) => {
       if (err) return next(err);
       res.json(user);
     });
