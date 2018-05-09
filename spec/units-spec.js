@@ -36,8 +36,6 @@ describe("Units API Tests:", function() {
             expect(res.statusCode).toBe(200);
             unitId1 = body[0]._id;
             unitId2 = body[1]._id;
-            console.log(unitId1);
-            console.log(unitId2);
             done();
           }
         );

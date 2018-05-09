@@ -85,8 +85,8 @@ router.put("/:ticketId/status/:status", (req, res, next) => {
         req.user
       );
       ticket.status = req.params.status;
-      ticket.dateUpdated = Date.now;
-      if (req.params.status == "CLOSED") ticket.dateClosed = Date.now;
+      ticket.dateUpdated = new Date();
+      if (req.params.status == "CLOSED") ticket.dateClosed = new Date();
       Ticket.saveTicket(ticket, (err, ticket) => {
         if (err) {
           return next(createError(500, "Failed to create ticket."));
@@ -114,7 +114,7 @@ router.put("/:ticketId/priority/:priority", (req, res, next) => {
         req.user
       );
       ticket.priority = req.params.priority;
-      ticket.dateUpdated = Date.now;
+      ticket.dateUpdated = new Date();
       Ticket.saveTicket(ticket, (err, ticket) => {
         if (err) {
           return next(createError(500, "Failed to create ticket."));

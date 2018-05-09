@@ -7,7 +7,9 @@ const api = request.defaults({
 
 describe("Tickets API Tests:", function() {
   let adminUserJwt = "";
-  let regularUserJwt = "";
+  let regularUserJwt = "",
+    ticketId1 = "",
+    ticketId2 = "";
 
   beforeAll(function(done) {
     // Get admin user jwt token.
@@ -23,6 +25,21 @@ describe("Tickets API Tests:", function() {
         expect(res.statusCode).toBe(200);
         adminUserJwt = body.token;
         done();
+        // Get units
+        api.get(
+          {
+            url: "/tickets",
+            headers: {
+              Authorization: "Bearer " + adminUserJwt
+            }
+          },
+          function(err, res, body) {
+            expect(res.statusCode).toBe(200);
+            ticketId1 = body[0]._id;
+            ticketId2 = body[1]._id;
+            done();
+          }
+        );
       }
     );
 
@@ -48,7 +65,7 @@ describe("Tickets API Tests:", function() {
   it("Get the technicians assigned to a ticket with admin user token.", function(done) {
     api.get(
       {
-        url: "/tickets/5af06af45c4052786643f5db/technicians",
+        url: "/tickets/" + ticketId1 + "/technicians",
         headers: {
           Authorization: "Bearer " + adminUserJwt
         }
@@ -64,7 +81,7 @@ describe("Tickets API Tests:", function() {
   it("Get the technicians assigned to a ticket with regular other user.", function(done) {
     api.get(
       {
-        url: "/tickets/5af06af45c4052786643f5db/technicians",
+        url: "/tickets/" + ticketId1 + "/technicians",
         headers: {
           Authorization: "Bearer " + regularUserJwt
         }
@@ -79,7 +96,7 @@ describe("Tickets API Tests:", function() {
   it("Set the priority of a ticket with admin user token.", function(done) {
     api.put(
       {
-        url: "/tickets/5af136f972c71b7131d2838d/priority/MEDIUM",
+        url: "/tickets/" + ticketId1 + "/priority/MEDIUM",
         headers: {
           Authorization: "Bearer " + adminUserJwt
         }
@@ -94,7 +111,7 @@ describe("Tickets API Tests:", function() {
   it("Set the priority of a ticket with regular other user.", function(done) {
     api.put(
       {
-        url: "/tickets/5af136f972c71b7131d2838d/priority/MEDIUM",
+        url: "/tickets/" + ticketId1 + "/priority/MEDIUM",
         headers: {
           Authorization: "Bearer " + regularUserJwt
         }
@@ -109,7 +126,7 @@ describe("Tickets API Tests:", function() {
   it("Set the status of a ticket with admin user token.", function(done) {
     api.put(
       {
-        url: "/tickets/5af136f972c71b7131d2838d/status/ONHOLD",
+        url: "/tickets/" + ticketId1 + "/status/ONHOLD",
         headers: {
           Authorization: "Bearer " + adminUserJwt
         }
@@ -124,7 +141,7 @@ describe("Tickets API Tests:", function() {
   it("Set the status of a ticket with regular other user.", function(done) {
     api.put(
       {
-        url: "/tickets/5af136f972c71b7131d2838d/status/ONHOLD",
+        url: "/tickets/" + ticketId1 + "/status/ONHOLD",
         headers: {
           Authorization: "Bearer " + regularUserJwt
         }
