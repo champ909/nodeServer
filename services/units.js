@@ -23,7 +23,7 @@ router.get("/:unitId/technicians", (req, res, next) => {
   if (req.user.type == "ADMIN") {
     Unit.getUnitById(req.params.unitId, (err, unit) => {
       if (err) return next(err);
-      res.json(unit && unit[0].technicians ? unit[0].technicians : []);
+      res.json(unit && unit.technicians ? unit.technicians : []);
     });
   } else {
     next(createError(403, "Forbidden: Insufficient Privilege."));
@@ -33,7 +33,7 @@ router.get("/:unitId/technicians", (req, res, next) => {
 // Get the tickets submitted to a unit.
 router.get("/:unitId/tickets", (req, res, next) => {
   if (req.user.type == "ADMIN") {
-    Ticket.getUnitById(req.params.unitId, (err, tickets) => {
+    Ticket.getTicketsAssignedToUnit(req.params.unitId, (err, tickets) => {
       if (err) return next(err);
       res.json(tickets);
     });
