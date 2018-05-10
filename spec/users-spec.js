@@ -32,7 +32,6 @@ describe("Users API Tests:", function() {
           function(err, res, body) {
             expect(res.statusCode).toBe(200);
             ticketUserId = body._id;
-            done();
           }
         );
       }

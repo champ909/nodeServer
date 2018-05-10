@@ -11,6 +11,21 @@ describe("Units API Tests:", function() {
   let unitId1 = "",
     unitId2 = "";
   beforeAll(function(done) {
+    // Get regular user jwt token.
+    api.post(
+      {
+        url: "/login",
+        body: {
+          username: "jojo",
+          password: "abcd"
+        }
+      },
+      function(err, res, body) {
+        expect(res.statusCode).toBe(200);
+        regularUserJwt = body.token;
+      }
+    );
+
     // Get admin user jwt token.
     api.post(
       {
@@ -23,7 +38,6 @@ describe("Units API Tests:", function() {
       function(err, res, body) {
         expect(res.statusCode).toBe(200);
         adminUserJwt = body.token;
-        done();
         // Get units
         api.get(
           {
@@ -39,22 +53,6 @@ describe("Units API Tests:", function() {
             done();
           }
         );
-      }
-    );
-
-    // Get regular user jwt token.
-    api.post(
-      {
-        url: "/login",
-        body: {
-          username: "jojo",
-          password: "abcd"
-        }
-      },
-      function(err, res, body) {
-        expect(res.statusCode).toBe(200);
-        regularUserJwt = body.token;
-        done();
       }
     );
   });
