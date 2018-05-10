@@ -38,18 +38,20 @@ router.post("/", (req, res, next) => {
       next(createError(404, "Missing username and/or password."));
     } else {
       const passhash = bcrypt.hashSync(req.body.password, 10);
-      const user = new User({
+      let values = {
         firstName: req.body.firstname || "",
         lastName: req.body.lastname || "",
         email: req.body.email || `${req.body.username}@techitnode.com`,
         username: req.body.username,
-        type: req.body.type || "REGULAR",
         hash: passhash,
         enabled: req.body.enabled || true,
         phone: req.body.phone || "",
         department: req.body.department || ""
-      });
+      };
 
+      if (User.isValidRole(req.body.type)) values.type = req.body.type;
+
+      let user = new User(values);
       User.saveUser(user, (err, user) => {
         if (err) {
           if (err.message.includes("duplicate")) {
