@@ -3,6 +3,9 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+const priorities = ["LOW", "MEDIUM", "HIGH"];
+const statuses = ["OPEN", "ASSIGNED", "ONHOLD", "COMPLETED", "CLOSED"];
+
 let ticketSchema = new Schema({
   createdBy: {
     type: Schema.Types.ObjectId,
@@ -36,12 +39,12 @@ let ticketSchema = new Schema({
   dateClosed: Date,
   priority: {
     type: String,
-    enum: ["LOW", "MEDIUM", "HIGH"],
+    enum: priorities,
     default: "MEDIUM"
   },
   status: {
     type: String,
-    enum: ["OPEN", "ASSIGNED", "ONHOLD", "COMPLETED", "CLOSED"],
+    enum: statuses,
     default: "OPEN"
   },
   technicians: [
@@ -127,7 +130,15 @@ ticketSchema.statics.saveTicket = function(ticket, callback) {
 };
 
 ticketSchema.statics.saveUpdate = function(ticket, details, technician) {
-  return ticket.updates.push({ message: details, technician: technician });
+  return ticket.updates.push({ details: details, technician: technician });
+};
+
+ticketSchema.statics.isValidPriority = function(priority) {
+  return priority && priorities.includes(priority) ? true : false;
+};
+
+ticketSchema.statics.isValidStatus = function(status) {
+  return status && statuses.includes(status) ? true : false;
 };
 
 module.exports = mongoose.model("Ticket", ticketSchema);
