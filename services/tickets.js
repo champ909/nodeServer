@@ -22,13 +22,13 @@ router.get("/", (req, res, next) => {
 router.post("/", (req, res, next) => {
   if (req.user.type == "ADMIN") {
     if (req.body.createdForEmail == null) {
-      next(createError(404, "Bad Request: createdForEmail field was missing."));
+      next(createError(400, "Bad Request: createdForEmail field was missing."));
     } else if (req.body.subject == null) {
-      next(createError(404, "Bad Request: subject field was missing."));
+      next(createError(400, "Bad Request: subject field was missing."));
     } else if (req.body.unit == null) {
-      next(createError(404, "Bad Request: unit field was missing."));
+      next(createError(400, "Bad Request: unit field was missing."));
     } else {
-      const ticket = new Ticket({
+      let values = {
         createdBy: req.user.userId,
         createdForName: req.body.createdForName || "",
         createdForEmail: req.body.createdForEmail,
@@ -41,13 +41,18 @@ router.post("/", (req, res, next) => {
         dateAssigned: req.body.dateAssigned,
         dateUpdated: req.body.dateUpdated || "",
         dateClosed: req.body.dateClosed || "",
-        priority: req.body.priority || "",
-        status: req.body.status || "",
-        technicians: req.body.technicians || "",
+        technicians: req.body.technicians || [],
         updates: req.body.updates || []
-      });
+      };
 
-      Tickets.saveTicket(ticket, (err, ticket) => {
+      if (Ticket.isValidPriority(req.body.priority))
+        values.priority = req.body.priority;
+
+      if (Ticket.isValidStatus(req.body.status))
+        values.status = req.body.status;
+
+      let ticket = new Ticket(values);
+      Ticket.saveTicket(ticket, (err, ticket) => {
         if (err) {
           return next(createError(500, "Failed to create ticket."));
         }
@@ -64,7 +69,7 @@ router.get("/:ticketId/technicians", (req, res, next) => {
   if (req.user.type == "ADMIN") {
     Ticket.getTicketById(req.params.ticketId, (err, ticket) => {
       if (err) return next(err);
-      res.json(ticket && ticket[0].technicians ? ticket[0].technicians : []);
+      res.json(ticket && ticket.technicians ? ticket.technicians : []);
     });
   } else {
     next(createError(403, "Forbidden: Insufficient Privilege."));

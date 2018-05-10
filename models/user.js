@@ -3,6 +3,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+const roles = ["REGULAR", "ADMIN", "SUPERVISOR", "TECHNICIAN"];
+
 let userSchema = new Schema({
   firstName: String,
   lastName: String,
@@ -15,7 +17,7 @@ let userSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ["REGULAR", "ADMIN", "SUPERVISOR", "TECHNICIAN"],
+    enum: roles,
     default: "REGULAR"
   },
   username: {
@@ -68,6 +70,10 @@ userSchema.statics.getUsers = function(fieldFilter, callback) {
 
 userSchema.statics.saveUser = function(user, callback) {
   return user.save(callback);
+};
+
+userSchema.statics.isValidRole = function(role) {
+  return role && roles.includes(role) ? true : false;
 };
 
 module.exports = mongoose.model("User", userSchema);

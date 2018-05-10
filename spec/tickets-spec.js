@@ -9,9 +9,26 @@ describe("Tickets API Tests:", function() {
   let adminUserJwt = "";
   let regularUserJwt = "",
     ticketId1 = "",
-    ticketId2 = "";
+    ticketId2 = "",
+    unitId1 = "",
+    unitId2 = "";
 
   beforeAll(function(done) {
+    // Get regular user jwt token.
+    api.post(
+      {
+        url: "/login",
+        body: {
+          username: "jojo",
+          password: "abcd"
+        }
+      },
+      function(err, res, body) {
+        expect(res.statusCode).toBe(200);
+        regularUserJwt = body.token;
+      }
+    );
+
     // Get admin user jwt token.
     api.post(
       {
@@ -24,8 +41,7 @@ describe("Tickets API Tests:", function() {
       function(err, res, body) {
         expect(res.statusCode).toBe(200);
         adminUserJwt = body.token;
-        done();
-        // Get units
+        // Get tickets
         api.get(
           {
             url: "/tickets",
@@ -40,22 +56,21 @@ describe("Tickets API Tests:", function() {
             done();
           }
         );
-      }
-    );
-
-    // Get regular user jwt token.
-    api.post(
-      {
-        url: "/login",
-        body: {
-          username: "jojo",
-          password: "abcd"
-        }
-      },
-      function(err, res, body) {
-        expect(res.statusCode).toBe(200);
-        regularUserJwt = body.token;
-        done();
+        // Get units
+        api.get(
+          {
+            url: "/units",
+            headers: {
+              Authorization: "Bearer " + adminUserJwt
+            }
+          },
+          function(err, res, body) {
+            expect(res.statusCode).toBe(200);
+            unitId1 = body[0]._id;
+            unitId2 = body[1]._id;
+            done();
+          }
+        );
       }
     );
   });
@@ -153,47 +168,44 @@ describe("Tickets API Tests:", function() {
     );
   });
 
-  //   it('Create new ticket with admin user token.', function (done) {
-  //     api.post({
-  //       url: '/tickets/5af136f972c71b7131d2838d/status/ONHOLD',
-  //       headers: {
-  //         'Authorization': 'Bearer ' + adminUserJwt
-  //       },
-  //       body: {
-  //         "createdForName": "Joseph Joestar",
-  //         "createdForEmail": "jojo@localhost.localdomain",
-  //         "subject": "Library noise",
-  //         "details": "Too much noise by front desk workers.",
-  //         "priority": "LOW",
-  //         "status": "OPEN",
-  //         "unit": "5af06af45c4052786643f5d4",
-  //         "technicians": ["5af06af45c4052786643f5d9", "5af06af45c4052786643f5d8"]
-  //       }
-  //     }, function (err, res, body) {
-  //       expect(res.statusCode).toBe(200);
-  //       done();
-  //     });
-  //   });
+  it("Create new ticket with regular user token.", function(done) {
+    api.post(
+      {
+        url: "/tickets",
+        headers: {
+          Authorization: "Bearer " + adminUserJwt
+        },
+        body: {
+          createdForName: "Joseph Joestar",
+          createdForEmail: "jojo@localhost.localdomain",
+          subject: "Library noise",
+          details: "Too much noise by front desk workers.",
+          unit: unitId1
+        }
+      },
+      function(err, res, body) {
+        expect(res.statusCode).toBe(200);
+        done();
+      }
+    );
+  });
 
-  //   it('Create new ticket with regular other user.', function (done) {
-  //     api.post({
-  //       url: '/tickets/5af136f972c71b7131d2838d/status/ONHOLD',
-  //       headers: {
-  //         'Authorization': 'Bearer ' + regularUserJwt
-  //       },
-  //       body: {
-  //         "createdForName": "Joseph Joestar",
-  //         "createdForEmail": "jojo@localhost.localdomain",
-  //         "subject": "Library noise",
-  //         "details": "Too much noise by front desk workers.",
-  //         "priority": "LOW",
-  //         "status": "OPEN",
-  //         "unit": "5af06af45c4052786643f5d4",
-  //         "technicians": ["5af06af45c4052786643f5d9", "5af06af45c4052786643f5d8"]
-  //       }
-  //     }, function (err, res, body) {
-  //       expect(res.statusCode).toBe(401);
-  //       done();
-  //     });
-  //   });
+  it("Create new ticket with regular user token with insufficient details.", function(done) {
+    api.post(
+      {
+        url: "/tickets",
+        headers: {
+          Authorization: "Bearer " + adminUserJwt
+        },
+        body: {
+          createdForName: "Joseph Joestar",
+          unit: unitId1
+        }
+      },
+      function(err, res, body) {
+        expect(res.statusCode).toBe(400);
+        done();
+      }
+    );
+  });
 });
